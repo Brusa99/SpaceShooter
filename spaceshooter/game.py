@@ -4,17 +4,20 @@ from pathlib import Path
 import pygame as pg
 
 RESOLUTION = (1280, 720)
+FPS = 60
 IMG_PATH = Path(__file__).parent / "resources" / "images"
 
 # Init
 pg.init()
 display = pg.display.set_mode(RESOLUTION)
 pg.display.set_caption('Space Shooter')
+clock = pg.time.Clock()
 
 # Assets
 player_surf = pg.image.load(IMG_PATH / "player.png").convert_alpha()
 player_rect = player_surf.get_frect(center=(display.get_width() / 2, display.get_height() / 2))
-player_direction = 1
+player_direction = pg.math.Vector2()
+player_speed = 200
 
 meteor_surf = pg.image.load(IMG_PATH / "meteor.png").convert_alpha()
 meteor_rect = meteor_surf.get_frect(center=(display.get_width() / 2, display.get_height() / 2))
@@ -34,15 +37,28 @@ star_positions = [
 # Run game
 running = True
 while running:
+    dt = clock.tick(FPS) / 1000
+
     # Event loop
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
 
+    # Input
+    keys = pg.key.get_pressed()
+    player_direction.x = keys[pg.K_d] - keys[pg.K_a]
+    player_direction.y = keys[pg.K_s] - keys[pg.K_w]
+
     # Updates
-    player_rect.left += 0.1 * player_direction
-    if player_rect.right >= display.get_width() or player_rect.left <= 0:
-        player_direction *= -1
+    player_rect.center += player_direction * player_speed * dt
+    if player_rect.right >= display.get_width():
+        player_rect.right = display.get_width()
+    if player_rect.left <= 0:
+        player_rect.left = 0
+    if player_rect.bottom >= display.get_height():
+        player_rect.bottom = display.get_height()
+    if player_rect.top <= 0:
+        player_rect.top = 0
 
     # Rendering
     display.fill("darkgray")
