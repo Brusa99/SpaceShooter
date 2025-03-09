@@ -1,13 +1,29 @@
+import random
+from pathlib import Path
+
 import pygame as pg
 
 RESOLUTION = (1280, 720)
+IMG_PATH = Path(__file__).parent / "resources" / "images"
 
-
+# Init
 pg.init()
 display = pg.display.set_mode(RESOLUTION)
 pg.display.set_caption('Space Shooter')
 
+# Surfaces
+player_surf = pg.image.load(IMG_PATH / "player.png").convert_alpha()
+player_pos = [0, 0]
+star_surf = pg.image.load(IMG_PATH / "star.png").convert_alpha()
+star_positions = [
+    (
+        random.randint(0, display.get_width() - star_surf.get_width()),
+        random.randint(0, display.get_height() - star_surf.get_height()),
+    )
+    for _ in range(20)
+]
 
+# Run game
 running = True
 while running:
     # Event loop
@@ -15,7 +31,14 @@ while running:
         if event.type == pg.QUIT:
             running = False
 
+    # Updates
+    player_pos[0] += 0.1
+
     # Rendering
+    display.fill("darkgray")
+    for star_pos in star_positions:
+        display.blit(star_surf, star_pos)
+    display.blit(player_surf, player_pos)
     pg.display.update()
 
 pg.quit()
