@@ -46,8 +46,14 @@ while running:
 
     # Input
     keys = pg.key.get_pressed()
+    jp_keys = pg.key.get_just_pressed()
+
     player_direction.x = keys[pg.K_d] - keys[pg.K_a]
     player_direction.y = keys[pg.K_s] - keys[pg.K_w]
+    player_direction = player_direction.normalize() if player_direction else player_direction
+
+    if jp_keys[pg.K_SPACE]:
+        print("pew pew")
 
     # Updates
     player_rect.center += player_direction * player_speed * dt
