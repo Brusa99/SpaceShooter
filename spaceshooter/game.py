@@ -53,9 +53,13 @@ while running:
     meteor_group.update(dt)
     laser_group.update(dt)
 
+    # Collisions
+    pg.sprite.groupcollide(laser_group, meteor_group, True, True)
+    if pg.sprite.spritecollide(player, meteor_group, dokill=False):
+        print("dead")
+
     # Rendering
     display.fill("darkgray")
-
     graphics_group.draw(display)
     meteor_group.draw(display)
     laser_group.draw(display)
