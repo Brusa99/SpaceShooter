@@ -13,12 +13,13 @@ class Player(pg.sprite.Sprite):
         self.direction = pg.Vector2()
         self.speed = 0.5
 
-        # Cooldown
+        # Shooting
         self.can_shoot = True
         self.laser_shoot_time = 0
         self.cooldown_duration = 400
+        self.laser_img = pg.image.load(IMG_PATH / "laser.png").convert_alpha()
 
-    def update(self, keys: list[bool], jp_keys: list[bool], dt: float) -> None:
+    def update(self, keys: list[bool], jp_keys: list[bool], dt: float, laser_group: pg.sprite.Group) -> None:
         """Move the player."""
         # Get input
         self.direction.x = keys[pg.K_d] - keys[pg.K_a]
@@ -41,8 +42,8 @@ class Player(pg.sprite.Sprite):
         # Shooting
         if jp_keys[pg.K_SPACE] and self.can_shoot:
             self.laser_shoot_time = pg.time.get_ticks()
-            print("pew pew")
             self.can_shoot = False
+            Laser(self.laser_img, self.rect.midtop, laser_group)
         self._laser_timer()
 
     def _laser_timer(self):
@@ -51,3 +52,17 @@ class Player(pg.sprite.Sprite):
             current_time = pg.time.get_ticks()
             if current_time - self.laser_shoot_time >= self.cooldown_duration:
                 self.can_shoot = True
+
+
+class Laser(pg.sprite.Sprite):
+    speed = 0.4
+
+    def __init__(self, image: pg.Surface, pos: tuple[float, float], *groups):
+        super().__init__(*groups)
+        self.image = image
+        self.rect = self.image.get_frect(midbottom=pos)
+
+    def update(self, dt):
+        self.rect.centery -= self.speed * dt
+        if self.rect.bottom < 0:
+            self.kill()

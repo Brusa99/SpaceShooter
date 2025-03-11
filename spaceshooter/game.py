@@ -14,19 +14,18 @@ pg.display.set_caption('Space Shooter')
 clock = pg.time.Clock()
 
 # Assets
-all_sprites = pg.sprite.Group()
+player_group = pg.sprite.Group()
+player = Player(display, player_group)
 
-player = Player(display, all_sprites)
-
+graphics_group = pg.sprite.Group()
 star_image = pg.image.load(IMG_PATH / "star.png").convert_alpha()
 for _ in range(20):
-    Star(display, star_image, all_sprites)
+    Star(display, star_image, graphics_group)
+
+laser_group = pg.sprite.Group()
 
 meteor_surf = pg.image.load(IMG_PATH / "meteor.png").convert_alpha()
 meteor_rect = meteor_surf.get_frect(center=(display.get_width() / 2, display.get_height() / 2))
-
-laser_surf = pg.image.load(IMG_PATH / "laser.png").convert_alpha()
-laser_rect = laser_surf.get_frect(bottomleft=(20, display.get_height() - 20))
 
 # Custom events
 meteor_event = pg.event.custom_type()
@@ -42,21 +41,24 @@ while running:
         if event.type == pg.QUIT:
             running = False
         if event.type == meteor_event:
-            print("New meteor")
+            # print("New meteor")
+            pass
 
     # Input
     keys = pg.key.get_pressed()
     jp_keys = pg.key.get_just_pressed()
 
     # Updates
-    all_sprites.update(keys, jp_keys, dt)
+    player_group.update(keys, jp_keys, dt, laser_group)
+    laser_group.update(dt)
 
     # Rendering
     display.fill("darkgray")
     display.blit(meteor_surf, meteor_rect)
-    display.blit(laser_surf, laser_rect)
 
-    all_sprites.draw(display)
+    graphics_group.draw(display)
+    laser_group.draw(display)
+    player_group.draw(display)
 
     pg.display.update()
 
