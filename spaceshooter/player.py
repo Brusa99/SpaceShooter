@@ -13,7 +13,12 @@ class Player(pg.sprite.Sprite):
         self.direction = pg.Vector2()
         self.speed = 0.5
 
-    def update(self, keys: list[bool], dt: float) -> None:
+        # Cooldown
+        self.can_shoot = True
+        self.laser_shoot_time = 0
+        self.cooldown_duration = 400
+
+    def update(self, keys: list[bool], jp_keys: list[bool], dt: float) -> None:
         """Move the player."""
         # Get input
         self.direction.x = keys[pg.K_d] - keys[pg.K_a]
@@ -32,3 +37,17 @@ class Player(pg.sprite.Sprite):
             self.rect.bottom = self.display.get_height()
         if self.rect.top <= 0:
             self.rect.top = 0
+
+        # Shooting
+        if jp_keys[pg.K_SPACE] and self.can_shoot:
+            self.laser_shoot_time = pg.time.get_ticks()
+            print("pew pew")
+            self.can_shoot = False
+        self._laser_timer()
+
+    def _laser_timer(self):
+        """Determine if player is able to shoot."""
+        if not self.can_shoot:
+            current_time = pg.time.get_ticks()
+            if current_time - self.laser_shoot_time >= self.cooldown_duration:
+                self.can_shoot = True

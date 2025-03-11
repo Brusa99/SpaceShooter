@@ -28,6 +28,10 @@ meteor_rect = meteor_surf.get_frect(center=(display.get_width() / 2, display.get
 laser_surf = pg.image.load(IMG_PATH / "laser.png").convert_alpha()
 laser_rect = laser_surf.get_frect(bottomleft=(20, display.get_height() - 20))
 
+# Custom events
+meteor_event = pg.event.custom_type()
+pg.time.set_timer(meteor_event, 500)
+
 # Run game
 running = True
 while running:
@@ -37,16 +41,15 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+        if event.type == meteor_event:
+            print("New meteor")
 
     # Input
     keys = pg.key.get_pressed()
     jp_keys = pg.key.get_just_pressed()
 
-    if jp_keys[pg.K_SPACE]:
-        print("pew pew")
-
     # Updates
-    all_sprites.update(keys, dt)
+    all_sprites.update(keys, jp_keys, dt)
 
     # Rendering
     display.fill("darkgray")
