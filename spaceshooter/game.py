@@ -8,6 +8,14 @@ from spaceshooter.star import Star
 from spaceshooter.meteor import Meteor
 
 
+def display_score():
+    current_time = pg.time.get_ticks() // 10
+    text_surf = font.render(f"Score: {current_time}", True, "#f0f0f0")
+    text_rect = text_surf.get_frect(midbottom=(display.get_width() / 2, display.get_height() - 50))
+    pg.draw.rect(display, "#f0f0f0", text_rect.inflate(25, 20).move(0, -5), 5, 10)
+    display.blit(text_surf, text_rect)
+
+
 # Init
 pg.init()
 display = pg.display.set_mode(RESOLUTION)
@@ -15,6 +23,8 @@ pg.display.set_caption('Space Shooter')
 clock = pg.time.Clock()
 
 # Assets
+font = pg.font.Font(IMG_PATH / "Oxanium-Bold.ttf", 30)
+
 player_group = pg.sprite.Group()
 player = Player(display, player_group)
 
@@ -59,11 +69,12 @@ while running:
         print("dead")
 
     # Rendering
-    display.fill("darkgray")
+    display.fill("#3a2e3f")
     graphics_group.draw(display)
     meteor_group.draw(display)
     laser_group.draw(display)
     player_group.draw(display)
+    display_score()
 
     pg.display.update()
 
