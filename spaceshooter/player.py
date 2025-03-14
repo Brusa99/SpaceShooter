@@ -10,6 +10,7 @@ class Player(pg.sprite.Sprite):
         self.display = display
         self.image = pg.image.load(IMG_PATH / "player.png").convert_alpha()
         self.rect = self.image.get_frect(center=(display.get_width() / 2, display.get_height() / 2))
+        self.mask = pg.mask.from_surface(self.image)
         self.direction = pg.Vector2()
         self.speed = 0.5
 
@@ -58,11 +59,14 @@ class Laser(pg.sprite.Sprite):
     speed = 0.4
 
     def __init__(self, image: pg.Surface, pos: tuple[float, float], *groups):
+        """Get a laser entity."""
         super().__init__(*groups)
         self.image = image
         self.rect = self.image.get_frect(midbottom=pos)
+        self.mask = pg.mask.from_surface(self.image)
 
-    def update(self, dt):
+    def update(self, dt: float):
+        """Move the laser. If off-screen, remove it."""
         self.rect.centery -= self.speed * dt
         if self.rect.bottom < 0:
             self.kill()
