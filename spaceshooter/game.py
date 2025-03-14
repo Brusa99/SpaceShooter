@@ -65,7 +65,7 @@ while running:
 
     # Collisions
     pg.sprite.groupcollide(laser_group, meteor_group, True, True)
-    if pg.sprite.spritecollide(player, meteor_group, dokill=False):
+    if pg.sprite.spritecollide(player, meteor_group, dokill=False, collided=pg.sprite.collide_mask):
         print("dead")
 
     # Rendering
