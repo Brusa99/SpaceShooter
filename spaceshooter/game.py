@@ -5,7 +5,7 @@ import pygame as pg
 from spaceshooter.constants import RESOLUTION, IMG_PATH, FPS
 from spaceshooter.player import Player
 from spaceshooter.star import Star
-from spaceshooter.meteor import Meteor
+from spaceshooter.meteor import Meteor, Explosion
 
 
 def display_score():
@@ -41,6 +41,10 @@ meteor_group = pg.sprite.Group()
 meteor_event = pg.event.custom_type()
 pg.time.set_timer(meteor_event, 500)
 
+# Explosion
+explosion_frames = [pg.image.load(IMG_PATH / "explosion" / f"{img}.png").convert_alpha() for img in range(21)]
+explosion_group = pg.sprite.Group()
+
 # Run game
 running = True
 while running:
@@ -62,9 +66,15 @@ while running:
     player_group.update(keys, jp_keys, dt, laser_group)
     meteor_group.update(dt)
     laser_group.update(dt)
+    explosion_group.update(dt)
 
     # Collisions
-    pg.sprite.groupcollide(laser_group, meteor_group, True, True)
+    # pg.sprite.groupcollide(laser_group, meteor_group, True, True)
+    for laser in laser_group.sprites():
+        collided_sprites = pg.sprite.spritecollide(laser, meteor_group, True)
+        if collided_sprites:
+            laser.kill()
+            Explosion(explosion_frames, laser.rect.midtop, explosion_group)
     if pg.sprite.spritecollide(player, meteor_group, dokill=False, collided=pg.sprite.collide_mask):
         print("dead")
 
@@ -74,6 +84,7 @@ while running:
     meteor_group.draw(display)
     laser_group.draw(display)
     player_group.draw(display)
+    explosion_group.draw(display)
     display_score()
 
     pg.display.update()
