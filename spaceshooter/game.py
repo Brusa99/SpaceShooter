@@ -2,7 +2,7 @@ import random
 
 import pygame as pg
 
-from spaceshooter.constants import RESOLUTION, IMG_PATH, FPS
+from spaceshooter.constants import RESOLUTION, IMG_PATH, SND_PATH, FPS
 from spaceshooter.player import Player
 from spaceshooter.star import Star
 from spaceshooter.meteor import Meteor, Explosion
@@ -25,6 +25,9 @@ clock = pg.time.Clock()
 
 # Assets
 font = pg.font.Font(IMG_PATH / "Oxanium-Bold.ttf", 30)
+music = pg.mixer.Sound(SND_PATH / "game_music.wav")
+music.set_volume(0.1)
+music.play(-1)
 
 player_group = pg.sprite.Group()
 player = Player(display, player_group)
@@ -44,6 +47,8 @@ pg.time.set_timer(meteor_event, 500)
 
 # Explosion
 explosion_frames = [pg.image.load(IMG_PATH / "explosion" / f"{img}.png").convert_alpha() for img in range(21)]
+explosion_sound = pg.mixer.Sound(SND_PATH / "explosion.wav")
+explosion_sound.set_volume(0.2 )
 explosion_group = pg.sprite.Group()
 
 # Run game
@@ -70,14 +75,15 @@ while running:
     explosion_group.update(dt)
 
     # Collisions
-    # pg.sprite.groupcollide(laser_group, meteor_group, True, True)
     for laser in laser_group.sprites():
         collided_sprites = pg.sprite.spritecollide(laser, meteor_group, True)
         if collided_sprites:
             laser.kill()
             Explosion(explosion_frames, laser.rect.midtop, explosion_group)
+            explosion_sound.play()
     if pg.sprite.spritecollide(player, meteor_group, dokill=False, collided=pg.sprite.collide_mask):
-        print("dead")
+        print(f"\nGame Over\n\nScore: {pg.time.get_ticks() // 10}")
+        running = False
 
     # Rendering
     display.fill("#3a2e3f")
