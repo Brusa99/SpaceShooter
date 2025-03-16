@@ -1,6 +1,6 @@
 import pygame as pg
 
-from spaceshooter.constants import IMG_PATH
+from spaceshooter.constants import IMG_PATH, SND_PATH
 
 
 class Player(pg.sprite.Sprite):
@@ -19,6 +19,8 @@ class Player(pg.sprite.Sprite):
         self.laser_shoot_time = 0
         self.cooldown_duration = 400
         self.laser_img = pg.image.load(IMG_PATH / "laser.png").convert_alpha()
+        self.laser_sound = pg.mixer.Sound(SND_PATH / "laser.wav")
+        self.laser_sound.set_volume(0.3)
 
     def update(self, keys: list[bool], jp_keys: list[bool], dt: float, laser_group: pg.sprite.Group) -> None:
         """Move the player."""
@@ -45,6 +47,7 @@ class Player(pg.sprite.Sprite):
             self.laser_shoot_time = pg.time.get_ticks()
             self.can_shoot = False
             Laser(self.laser_img, self.rect.midtop, laser_group)
+            self.laser_sound.play()
         self._laser_timer()
 
     def _laser_timer(self):

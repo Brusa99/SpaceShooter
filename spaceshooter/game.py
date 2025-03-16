@@ -18,6 +18,7 @@ def display_score():
 
 # Init
 pg.init()
+pg.mixer.init()
 display = pg.display.set_mode(RESOLUTION)
 pg.display.set_caption('Space Shooter')
 clock = pg.time.Clock()
